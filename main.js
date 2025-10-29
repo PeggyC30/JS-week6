@@ -1,0 +1,220 @@
+let data = [
+  // {
+  //   id: 0,
+  //   name: "肥宅心碎賞櫻3日",
+  //   imgUrl:
+  //     "https://images.unsplash.com/photo-1522383225653-ed111181a951?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1655&q=80",
+  //   area: "高雄",
+  //   description: "賞櫻花最佳去處。肥宅不得不去的超讚景點！",
+  //   group: 87,
+  //   price: 1400,
+  //   rate: 10,
+  // },
+  // {
+  //   id: 1,
+  //   name: "貓空纜車雙程票",
+  //   imgUrl:
+  //     "https://images.unsplash.com/photo-1501393152198-34b240415948?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1650&q=80",
+  //   area: "台北",
+  //   description: "乘坐以透明強化玻璃為地板的「貓纜之眼」水晶車廂，享受騰雲駕霧遨遊天際之感",
+  //   group: 99,
+  //   price: 240,
+  //   rate: 2,
+  // },
+  // {
+  //   id: 2,
+  //   name: "台中谷關溫泉會1日",
+  //   imgUrl:
+  //     "https://images.unsplash.com/photo-1535530992830-e25d07cfa780?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1650&q=80",
+  //   area: "台中",
+  //   description: "全館客房均提供谷關無色無味之優質碳酸原湯，並取用八仙山之山冷泉供蒞臨貴賓沐浴及飲水使用。",
+  //   group: 20,
+  //   price: 1765,
+  //   rate: 7,
+  // },
+];
+// LV1 替換data資料  → LV3 function包裝渲染過程，並呼叫、篩選後會顯示『搜尋資料為 ? 筆』
+const ticketCardArea = document.querySelector(".ticketCard-area");
+const searchResultText = document.querySelector("#searchResult-text");
+
+const cantFindArea = document.querySelector(".cantFind-area");
+
+function renderData(data) {
+  let template = "";
+  data.forEach(function (item) {
+    template += `<li class="ticketCard">
+            <div class="ticketCard-img">
+              <a href="#">
+                <img
+                  src="${item.imgUrl}"
+                  alt=""
+                />
+              </a>
+              <div class="ticketCard-region">${item.area}</div>
+              <div class="ticketCard-rank">${item.rate}</div>
+            </div>
+            <div class="ticketCard-content">
+              <div>
+                <h3>
+                  <a href="#" class="ticketCard-name">${item.name}</a>
+                </h3>
+                <p class="ticketCard-description">${item.description}</p>
+              </div>
+              <div class="ticketCard-info">
+                <p class="ticketCard-num">
+                  <span><i class="fas fa-exclamation-circle"></i></span>
+                  剩下最後 <span id="ticketCard-num"> ${item.group} </span> 組
+                </p>
+                <p class="ticketCard-price">TWD <span id="ticketCard-price">$${item.price}</span></p>
+              </div>
+            </div>
+          </li>`;
+  });
+  ticketCardArea.innerHTML = template;
+  searchResultText.textContent = `本次搜尋共 ${data.length} 筆資料`;
+  if (data.length === 0) {
+    cantFindArea.style.display = "block";
+  } else {
+    cantFindArea.style.display = "none";
+  }
+}
+// renderData(data);  //改由抓取伺服器資料getData後再渲染畫面
+
+// LV3 篩選地區功能
+const regionSearch = document.querySelector(".regionSearch");
+
+function renderChart(data) {
+  const chart = c3.generate({
+    bindto: "#chart",
+    size: {
+      width: 162,
+      height: 192,
+    },
+    data: {
+      columns: data, // 資料存放
+      type: "donut", // 圖表種類
+      colors: {
+        高雄: "#E68618",
+        台中: "#5151D3",
+        台北: "#26BFC7",
+      },
+    },
+    donut: {
+      width: 12,
+      title: "套票地區比重",
+      label: {
+        show: false,
+      },
+    },
+  });
+}
+
+function formatData() {
+  const obj = {};
+  data.forEach(function (item) {
+    if (!obj[item.area]) {
+      obj[item.area] = 1;
+    } else {
+      obj[item.area]++;
+    }
+  });
+  renderChart(Object.entries(obj));
+}
+
+function filterData() {
+  let filterResult = [];
+  data.forEach(function (item) {
+    if (item.area === regionSearch.value) {
+      filterResult.push(item);
+    }
+    if (!regionSearch.value) {
+      filterResult.push(item);
+    }
+  });
+
+  renderData(filterResult);
+}
+regionSearch.addEventListener("change", filterData);
+
+// LV3 新增套票
+const ticketName = document.querySelector("#ticketName");
+const ticketImgUrl = document.querySelector("#ticketImgUrl");
+const ticketRegion = document.querySelector("#ticketRegion");
+const ticketPrice = document.querySelector("#ticketPrice");
+const ticketNum = document.querySelector("#ticketNum");
+const ticketRate = document.querySelector("#ticketRate");
+const ticketDescription = document.querySelector("#ticketDescription");
+
+const addTicketBtn = document.querySelector(".addTicket-btn");
+const addTicketForm = document.querySelector(".addTicket-form");
+
+function addData() {
+  let obj = {
+    id: data.length,
+    name: ticketName.value.trim(),
+    imgUrl: ticketImgUrl.value.trim(),
+    area: ticketRegion.value.trim(),
+    description: ticketDescription.value.trim(),
+    group: Number(ticketNum.value.trim()),
+    price: Number(ticketPrice.value.trim()),
+    rate: Number(ticketRate.value.trim()),
+  };
+  let errorMsg = "";
+  if (!obj.name) {
+    errorMsg = "套票名稱為必填!";
+  } else if (!obj.imgUrl) {
+    errorMsg = "圖片網址為必填!";
+  } else if (!obj.area) {
+    errorMsg = "請選擇地區!";
+  } else if (obj.price <= 0) {
+    errorMsg = "套票金額必須大於 0!";
+  } else if (obj.group < 1) {
+    errorMsg = "套票組數必須至少為 1!";
+  } else if (obj.rate < 1 || obj.rate > 10) {
+    errorMsg = "套票星級必須在 1 至 10 之間!";
+  } else if (obj.description.length > 100) {
+    errorMsg = "套票描述必填，且不能超過 100 字!";
+  }
+  if (errorMsg) {
+    alert(errorMsg);
+    return;
+  }
+  data.push(obj);
+  regionSearch.value = "";
+  renderData(data);
+  addTicketForm.reset();
+}
+addTicketBtn.addEventListener("click", function () {
+  addData();
+  formatData();
+});
+
+// week 6 向伺服器取得資料
+const url = "https://raw.githubusercontent.com/hexschool/js-training/main/travelApi.json";
+// function getData() {
+//   axios
+//     .get(url)
+//     .then(function (res) {
+//       console.log(res);
+//       data = res.data.data;
+//       renderData(data);
+//     })
+//     .catch(function () {
+//       console.log("發生錯誤");
+//     });
+// }
+
+// async await
+async function getData() {
+  try {
+    const res = await axios.get(url);
+    data = res.data.data;
+
+    renderData(data);
+    formatData();
+  } catch (error) {
+    console.log("發生錯誤");
+  }
+}
+
+getData();
