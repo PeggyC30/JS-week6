@@ -3,8 +3,8 @@
 *::before {
   -webkit-box-sizing: border-box;
   box-sizing: border-box;
-  /* -webkit-transition: all 0.2s;
-  transition: all 0.2s; */
+  -webkit-transition: all 0.2s;
+  transition: all 0.2s;
 }
 
 html,
@@ -246,12 +246,12 @@ body {
   max-width: 1060px;
   margin: 0 auto;
   padding: 50px 0;
-  /* flex: none; */
+  flex: none;
 }
 .search-c3 {
   /* display: flex;
   justify-content: space-between; */
-  margin-left: auto;
+  /* margin-left: auto; */
 }
 .search-area p {
   color: #818a91;

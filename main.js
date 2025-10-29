@@ -83,44 +83,6 @@ function renderData(data) {
 // LV3 篩選地區功能
 const regionSearch = document.querySelector(".regionSearch");
 
-function renderChart(data) {
-  const chart = c3.generate({
-    bindto: "#chart",
-    size: {
-      width: 162,
-      height: 192,
-    },
-    data: {
-      columns: data, // 資料存放
-      type: "donut", // 圖表種類
-      colors: {
-        高雄: "#E68618",
-        台中: "#5151D3",
-        台北: "#26BFC7",
-      },
-    },
-    donut: {
-      width: 12,
-      title: "套票地區比重",
-      label: {
-        show: false,
-      },
-    },
-  });
-}
-
-function formatData() {
-  const obj = {};
-  data.forEach(function (item) {
-    if (!obj[item.area]) {
-      obj[item.area] = 1;
-    } else {
-      obj[item.area]++;
-    }
-  });
-  renderChart(Object.entries(obj));
-}
-
 function filterData() {
   let filterResult = [];
   data.forEach(function (item) {
@@ -186,7 +148,6 @@ function addData() {
 }
 addTicketBtn.addEventListener("click", function () {
   addData();
-  formatData();
 });
 
 // week 6 向伺服器取得資料
@@ -211,7 +172,6 @@ async function getData() {
     data = res.data.data;
 
     renderData(data);
-    formatData();
   } catch (error) {
     console.log("發生錯誤");
   }
